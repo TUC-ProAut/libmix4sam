@@ -1,0 +1,17 @@
+# - Config file for the libmix4sam package
+# It defines the following variables
+#  @CMAKE_PROJECT_NAME@_INCLUDE_DIRS - include directories for libmix4sam
+#  @CMAKE_PROJECT_NAME@_LIBRARIES    - libraries to link against
+ 
+# Compute paths
+get_filename_component(@CMAKE_PROJECT_NAME@_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(@CMAKE_PROJECT_NAME@_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include("${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/@CMAKE_PROJECT_NAME@-exports.cmake")
+
+# These are IMPORTED targets created by @CMAKE_PROJECT_NAME@Targets.cmake
+set(@CMAKE_PROJECT_NAME@_LIBRARIES @CMAKE_PROJECT_NAME@)
+
+SET(@CMAKE_PROJECT_NAME@_FOUND "TRUE")
+
