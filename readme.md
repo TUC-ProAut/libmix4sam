@@ -58,7 +58,7 @@ Than configure and compile
 Change to the source folder of libmix4sam.
 
 ```bash
-❯ mkdir build & cd build
+❯ mkdir build && cd build
 ❯ cmake .. -DGTSAM_BUILD_DIR=<path-to-gtsam403-build-directory>
 ❯ make -j2
 ```
@@ -80,7 +80,7 @@ To test the functionality, there is the same example as above implemented in MAT
 ## Additional notes
 
 > **LM-Algorithm:** 
-In between the gtsam versions 4.0 and 4.0.3, the stopping criteria calculation of the Levenberg-Marquardt algorithm changed (this regards the file `gtsam/nonlinear/LevenbergMarquardtOptimizer.cpp`). To get the same results as in our published experiments, the mentioned file has to be replaced by the version from gtsam release 4.0.
+> In between the gtsam versions 4.0 and 4.0.3, the stopping criteria calculation of the Levenberg-Marquardt algorithm changed (this regards the file `gtsam/nonlinear/LevenbergMarquardtOptimizer.cpp`). To get the same results as in our published experiments, the mentioned file has to be replaced by the version from gtsam release 4.0.
 
 > **Matlab-Wrapper:** If MATLAB is complaining about 'Missing symbol's while loading the wrapper, it usually helps starting matlab with changed `LD_PRELOAD` environment variable as follows:
 >```bash
