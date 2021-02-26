@@ -6,13 +6,8 @@ It provides factors and noise models to implement robust state estimation using 
 Further information can be found in the corresponding paper, see section "Citation", and our [project's landing page](https://mytuc.org/mix).
 
 ## Contact information
-Sven Lange<br>
-sven.lange@etit.tu-chemnitz.de<br>
-https://www.tu-chemnitz.de/etit/proaut/sven_lange
-
-Tim Pfeifer<br>
-tim.pfeifer@etit.tu-chemnitz.de<br>
-https://www.tu-chemnitz.de/etit/proaut/tim_pfeifer
+- [Sven Lange](https://www.tu-chemnitz.de/etit/proaut/sven_lange)
+- [Tim Pfeifer](https://www.tu-chemnitz.de/etit/proaut/tim_pfeifer)
 
 ## License information
 libmix4sam is free software: you can redistribute it and/or modify
