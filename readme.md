@@ -24,7 +24,27 @@ You should have received a copy of the GNU General Public License
 along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Citation
-COMMING SOON
+
+If you use this library for academic work, please either cite the library or a corresponding paper:
+<details>
+<summary>BibTeX of libmix4sam</summary>
+
+```tex
+  @Misc{libmix4sam,
+   author       = {Sven Lange and Others},
+   title        = {libmix4sam},
+   howpublished = {\url{https://github.com/TUC-ProAut/libmix4sam}}
+  }
+```
+
+</details>
+
+<details>
+<summary>Accompanying Paper</summary>
+
+* Pfeifer, Tim, Sven Lange, and Peter Protzel (2021) [Advancing Mixture Models for Least Squares Optimization](http://arxiv.org/abs/2103.02472). arXiv:2103.02472 [cs] (to appear in IEEE Robotics and Automation Letters)
+
+</details>
 
 ## How to compile
 The following two subsections describe how to build libmix4sam in combination with a local build of gtsam. As there are some specifics to the gtsam build, we will start with this.
@@ -81,6 +101,11 @@ To test the functionality, there is the same example as above implemented in MAT
 >```bash
 >❯ LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6" matlab
 >```
+
+> **Error-Modeling:** Be careful in modelling the mixture components. E.g. if you model an ambiguous measurement with three possible modes all into the mean for the gaussian components and use zero for the factor, it may lead to an indeterminate system. If you instead use one mean as measurement and shift the remaining means accordingly, the system may be solvable again.  
+
+## Known bugs
+* The new GMM noise model won't work till now with GTSAM's BearingRangeFactor (and RangeFactor / BearingFactor), which are based on the ExpressionFactor. If you need it, you could use the older versions of these factors from GTSAM 3.2.3.
 
 ## References
 
