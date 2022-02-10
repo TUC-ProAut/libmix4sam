@@ -1,5 +1,8 @@
 # Mixtures for Smoothing and Mapping Library (libMix4SAM)
 
+<img align="right" width="300px" src="doc/img/promo.gif">
+<img align="right" height="300px" src="doc/img/promo_padding.png">
+
 libMix4SAM is extending the functionality of GTSAM [1].
 It provides factors and noise models to implement robust state estimation using gaussian mixture distributions.
 
@@ -8,6 +11,7 @@ Further information can be found in the corresponding paper, see section "Citati
 ## Contact information
 - [Sven Lange](https://www.tu-chemnitz.de/etit/proaut/sven_lange)
 - [Tim Pfeifer](https://www.tu-chemnitz.de/etit/proaut/tim_pfeifer)
+<br clear="right"/>
 
 ## License information
 libmix4sam is free software: you can redistribute it and/or modify
