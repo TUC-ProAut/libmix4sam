@@ -33,6 +33,7 @@
 class gtsam::Pose2;
 class gtsam::Pose3;
 virtual class gtsam::Rot3;
+class gtsam::Rot2;
 virtual class gtsam::Point3;
 virtual class gtsam::Point2;
 virtual class gtsam::Values;
@@ -161,6 +162,25 @@ namespace libmix4sam {
   typedef libmix4sam::PsrFactor1<gtsam::Pose2, gtsam::Point2> Psr2DPriorFactor;
   typedef libmix4sam::PsrFactor1<gtsam::Pose3, gtsam::Point3> Psr3DPriorFactor;
   typedef libmix4sam::PsrFactor1<gtsam::Point2, gtsam::Point2> PsrRadarPriorFactor;
+
+
+  #include <libmix4sam/registration/RadarDopplerFactor.h>
+  //template<VALUE = {Vector2}>
+  virtual class RadarDopplerFactor : gtsam::NonlinearFactor
+  {
+    RadarDopplerFactor(size_t key, const double &measuredDoppler, const double &measuredPhi, const gtsam::noiseModel::Base* dopplerNoise, const gtsam::noiseModel::Diagonal* phiNoise, const double &deltaT);
+    RadarDopplerFactor(size_t key, const double &measuredDoppler, const double &measuredPhi, const gtsam::noiseModel::Base* dopplerNoise, const gtsam::noiseModel::Diagonal* phiNoise, const double &deltaT, const gtsam::Pose2& T_BS);
+    Vector x1(const gtsam::Values& x) const;
+    double error(const gtsam::Values& c) const;
+    Vector unwhitenedError(const gtsam::Values& x) const;
+    //gtsam::noiseModel::Base* noiseModel(const Vector& x1) const;
+    gtsam::noiseModel::Base* noiseModel(const gtsam::Point2& x1) const;
+    void print(string s) const;
+    bool equals(const gtsam::NonlinearFactor& expected, double tol) const;
+    // enabling serialization functionality
+    void serialize() const;
+  };
+
 
 
 } // end namespace libmix4sam

@@ -22,8 +22,7 @@
 
 /**
  * @file PsrFactor.cpp
- * @author TU Chemnitz, ET/IT, Prozessautomatisierung
- * @brief Point Set Registration Factor.
+ * @author Sven Lange (TU Chemnitz, ET/IT, Prozessautomatisierung)
  */
 
 #include <libmix4sam/registration/PsrFactor.h>

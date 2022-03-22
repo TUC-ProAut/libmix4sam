@@ -1,5 +1,5 @@
 function [] = configurePath(varargin)
-%CONFIGURE Add gtsam and libmix4sam to matlab path.
+%CONFIGUREPATH Add gtsam and libmix4sam to matlab path.
 %   General function to add path of gtsam and libmix4sam to matlab path.
 %   Usually needed in every startup.m file!
 %
@@ -15,6 +15,8 @@ function [] = configurePath(varargin)
 % INPUT (optional) Argumen-Value:
 %  useLddPath ... enable/disable automatic gtsam detection
 %  useUnstable ... enable/disable unstable branch of gtsam
+
+% @author Sven Lange (TU Chemnitz, ET/IT, Prozessautomatisierung)
 
 % This file is part of
 % libmix4sam - Mixtures for Smoothing and Mapping Library

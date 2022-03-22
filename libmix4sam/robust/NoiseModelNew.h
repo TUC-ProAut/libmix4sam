@@ -22,9 +22,8 @@
 
 /**
  * @file NoiseModelNew.h
- * @author Sven Lange (sven.lange@gmail.com)
- * @brief This is the try to implement the robust factors in a way of GtSAM.
- * @date 2019-06-12
+ * @author Sven Lange (TU Chemnitz, ET/IT, Prozessautomatisierung)
+ * @brief Implements robust noise models.
  */
 
 #ifndef NOISEMODELNEW_H
@@ -44,7 +43,7 @@ namespace libmix4sam
 
   struct MixComponent {
 
-    gtsam::noiseModel::Base::shared_ptr noiseModel_;   /**< Component's noise model (currently only gaussians are supported) */
+    gtsam::noiseModel::Base::shared_ptr noiseModel_;   /**< Component's noise model (currently only Gaussians are supported) */
     double w_;                                         /**< Weight of component */
     gtsam::Vector mu_;                                 /**< Mean value of component */
 

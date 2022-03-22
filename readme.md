@@ -87,14 +87,17 @@ Change to the source folder of libmix4sam.
 ## Example
 The file `examples/testPsr2DFactor.cpp` implements a very simple 2D registration example using a GMM for the fixed point set.
 
-More advanced examples are implemented in MATLAB, see the `matlab` directory. (COMMING SOON)
+More advanced examples are implemented in MATLAB, see the `matlab` directory and e.g. our [CREME Project](https://mytuc.org/creme) (Credible Radar Ego-Motion Estimation).
 
+## Matlab 
 To use the library in MATLAB, add it to the search path:
 ```Matlab
 ❯ path( path, fullfile(<Path-to-lib-src>, 'matlab') );
 ❯ libmix4sam.configurePath(<Path-to-lib-src>);
 ```
 To test the functionality, there is the same example as above implemented in MATLAB, see `matlab/tests/testPsr2DFactor.m`.
+
+Some functionalities need additional toolboxes or functions. These are usually located in `matlab/External` and can be downloaded by running the included `getExternals.sh` script (for manual download, see contents of the script). 
 
 ## Additional notes
 

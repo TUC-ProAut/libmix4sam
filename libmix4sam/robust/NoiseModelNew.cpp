@@ -20,6 +20,11 @@
  * Contact Information: Sven Lange (sven.lange@etit.tu-chemnitz.de)
  ***************************************************************************/
 
+/**
+ * @file NoiseModelNew.cpp
+ * @author Sven Lange (TU Chemnitz, ET/IT, Prozessautomatisierung)
+ */
+
 #include "NoiseModelNew.h"
 #include "libmix4sam/robust/numericalRobust.h"
 #include <gtsam/base/numericalDerivative.h>
@@ -29,7 +34,10 @@
 
 #define SUMMIX_NUMERIC 0
 #define MAXSUMMIX_NUMERIC 0
-// MaxSumMix dampening parameter. For details, see paper.
+/* MaxSumMix dampening parameter. 
+   For details, see:
+   Pfeifer, T., Lange, S. and Protzel, P. (2021) ‘Advancing Mixture Models for Least Squares Optimization’, 
+   IEEE Robotics and Automation Letters, 6(2), pp. 3941--3948. doi:10.1109/LRA.2021.3067307. */
 #define MAXSUMMIX_DAMPENING 10.0
 
 namespace libmix4sam {
@@ -135,7 +143,7 @@ namespace libmix4sam {
     gtsam::Matrix we = gtsam::Matrix::Zero(this->size(),v.size()); // whitened error for all components of mixture
     
     for(size_t i=0; i<this->size();i++){
-      // Currently a gaussian based error model for each mixture component is needed, because of the needed square root information matrix
+      // Currently a Gaussian based error model for each mixture component is needed, because of the needed square root information matrix
       const gtsam::noiseModel::Gaussian* p = dynamic_cast<const gtsam::noiseModel::Gaussian*> (&*this->at(i).noiseModel_);
       if (p == NULL) throw std::invalid_argument( "Mixture: only gaussian based noise models are currently supported!" );
       we.row(i) = p->whiten(v - this->at(i).mu_); // kommt mu_ auch mit in die Ableitung bzw. den Ergebnisvector a??
@@ -158,10 +166,10 @@ namespace libmix4sam {
 
   std::vector<gtsam::Vector> Mixture::getDExponents(const gtsam::Vector &unwhitenedError) const{
 
-    std::vector<gtsam::Vector> dExponents;   // derivative of exponents (half mahanalobis norm) for all components of mixture
+    std::vector<gtsam::Vector> dExponents;   // derivative of exponents (half Mahalanobis norm) for all components of mixture
     for(size_t i=0; i<this->size();i++){
 
-      // Currently a gaussian based error model for each mixture component is needed, because of the needed square root information matrix
+      // Currently a Gaussian based error model for each mixture component is needed, because of the needed square root information matrix
       const gtsam::noiseModel::Gaussian* p = dynamic_cast<const gtsam::noiseModel::Gaussian*> (&*this->at(i).noiseModel_);
       if (p == NULL) throw std::invalid_argument( "SumMix: only gaussian based noise models are currently supported!");
 
@@ -196,7 +204,7 @@ namespace libmix4sam {
   }
 
   MixComponent Mixture::merge() const {
-    // siehe "EM algorithms for Gaussian mixtures with split-and-merge operation" Zhihua Zhang, Chibiao Chen, Jian Sun,Kap Luk Chan
+    // see "EM algorithms for Gaussian mixtures with split-and-merge operation" Zhihua Zhang, Chibiao Chen, Jian Sun,Kap Luk Chan
     double w = this->at(0).w();
     gtsam::Vector mu = this->at(0).w() * this->at(0).mu();
     gtsam::noiseModel::Gaussian* tmp = dynamic_cast<gtsam::noiseModel::Gaussian*> (&*this->at(0).noiseModel_);
@@ -368,7 +376,7 @@ namespace libmix4sam {
       this->cacheNormalizerValue_ = c(min_idx);
       this->cacheMixSum_ = md5sum;
 
-      return this->cacheWhitenedError_;  // Regularizer sollte für A-Matrix irrelevant sein, nur für .distance Methode wird er berücksichtigt.
+      return this->cacheWhitenedError_;  
     }
 
     
@@ -406,7 +414,6 @@ namespace libmix4sam {
     }
 
     void MaxMix::WhitenSystem(gtsam::Matrix& A, gtsam::Vector& b) const {
-      // Hier wird neben dem Fehlervektor noch die A-Matrix (Jakobi-Matrix der Fehlerfunktion) mit der square root information matrix multipliziert.
       ComponentSelect idx_gamma;
       b *= -1.0;
       b = this->processMixture(b, idx_gamma);  // eqivalent to whiten, but returning additional information for us
@@ -460,9 +467,6 @@ namespace libmix4sam {
       double cMax = c(min_idx);
       double dMax = exponents(min_idx);
       double sumMixCorrection = -2.0 * (libmix4sam::ScaledLogSumExp(exponents.array() - dMax, c.array() / cMax) - log(c.size() + MAXSUMMIX_DAMPENING) );
-      //WICHTIG: Auch hier muss Korrekturterm - log(c.size() + MAXSUMMIX_DAMPENING) eingefügt werden, um keine negativen Fehler zu bekommen -> nur dann kann man sich das Wurzel ziehen und quadrieren sparen!
-
-      //cdistance: cj*cj + vj.squaredNorm();
       return this->cdistance(c_as_dim(min_idx), we.row(min_idx)) + sumMixCorrection;
     }
 
@@ -543,7 +547,7 @@ namespace libmix4sam {
       std::vector<gtsam::Vector> d_exponents__d_unwhitenedError;
       gtsam::Vector d_imax__d_unwhitenedError = p_max->information() * (v - mixture_.at(idx_max).mu_);
       for (size_t j=0; j<exponents.size();j++){
-        // Currently a gaussian based error model for each mixture component is needed, because of the needed square root information matrix
+        // Currently a Gaussian based error model for each mixture component is needed, because of the needed square root information matrix
         const gtsam::noiseModel::Gaussian* p = dynamic_cast<const gtsam::noiseModel::Gaussian*> (&*this->mixture_.at(j).noiseModel_);
         if (p == NULL) throw std::invalid_argument( "SumMix: only gaussian based noise models are currently supported!");
 
@@ -637,8 +641,6 @@ namespace libmix4sam {
     }
 
     Vector SumMix::whiten(const Vector& v) const {
-
-      // Wir berechnen den whitened error mit hilfe numerisch stabiler Funktionen
       double gamma_s = 0;
       double logSumMixture = processMixtureNumericalRobust(v, gamma_s);
       //double sqrtLogSumMixture = sqrt(-2.0*(logSumMixture - log(gamma_s)));
@@ -691,7 +693,7 @@ namespace libmix4sam {
       d_whiten__d_unwhitenedError = -1 / sqrt(-2*libmix4sam::ScaledLogSumExp(exponents, scalings)) * dSum.matrix().transpose();
 
 #endif
-      return d_whiten__d_unwhitenedError * A;  // TODO: A hat höhere Dimension, da Jakobi-Matrix aus Faktor.
+      return d_whiten__d_unwhitenedError * A;  
     };
 
     void SumMix::WhitenSystem(std::vector<gtsam::Matrix>& A, gtsam::Vector& b) const {
@@ -709,9 +711,6 @@ namespace libmix4sam {
     }
 
     void SumMix::WhitenSystem(gtsam::Matrix& A, gtsam::Vector& b) const {
-      // Hier wird neben dem Fehlervektor noch die A-Matrix (Jakobi-Matrix der Fehlerfunktion) mit der square root information matrix multipliziert.
-      //std::cout << "SumMix WhitenSystem A b" << std::endl;
-
       b *= -1.0;
       b = this->whiten(b);
       b *= -1.0;

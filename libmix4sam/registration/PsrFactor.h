@@ -22,7 +22,7 @@
 
 /**
  * @file PsrFactor.h
- * @author TU Chemnitz, ET/IT, Prozessautomatisierung
+ * @author Sven Lange (TU Chemnitz, ET/IT, Prozessautomatisierung)
  * @brief Point Set Registration Factor.
  */
 #pragma once
@@ -218,7 +218,7 @@ class PsrFactor{
       Matrix D_hx_pnt; // Derivation after Point (Should be the rotation matrix!)
       T_B0B1.transformFrom(m_current_, boost::none, D_hx_pnt); // h(x) Point from current frame as seen in reference frame.
 
-      // Do we need to update the noiseModel or can we use the cached one, because only minor changes occured?
+      // Do we need to update the noiseModel or can we use the cached one, because only minor changes occurred?
       if (!isNoiseModelRecalculationNeeded(D_hx_pnt)) {return this->cachedNoiseModel_;}
 
       return updateNoiseModel(D_hx_pnt);
@@ -232,7 +232,7 @@ class PsrFactor{
       Matrix D_hx_pnt; // Derivation after Point (Should be the rotation matrix!)
       T_B0B1.transformFrom(m_current_, boost::none, D_hx_pnt); // h(x) Point from current frame as seen in reference frame.
 
-      // Do we need to update the noiseModel or can we use the cached one, because only minor changes occured?
+      // Do we need to update the noiseModel or can we use the cached one, because only minor changes occurred?
       if (!isNoiseModelRecalculationNeeded(D_hx_pnt)) {return this->cachedNoiseModel_;}
 
       return updateNoiseModel(D_hx_pnt);
@@ -245,7 +245,7 @@ class PsrFactor{
       Matrix D_hx_pnt; // Derivation after Point (Should be the rotation matrix!)
       T_B0B1.transformFrom(m_current_, boost::none, D_hx_pnt); // h(x) Point from current frame as seen in reference frame.
 
-      // Do we need to update the noiseModel or can we use the cached one, because only minor changes occured?
+      // Do we need to update the noiseModel or can we use the cached one, because only minor changes occurred?
       if (!isNoiseModelRecalculationNeeded(D_hx_pnt)) {return this->cachedNoiseModel_;}
 
       return updateNoiseModel(D_hx_pnt);
