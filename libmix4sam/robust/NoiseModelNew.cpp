@@ -29,6 +29,8 @@
 #include "libmix4sam/robust/numericalRobust.h"
 #include <gtsam/base/numericalDerivative.h>
 
+#include <boost/format.hpp>
+
 #include <gtsam/base/timing.h>
 //#define gttic_(label) ((void)0)
 

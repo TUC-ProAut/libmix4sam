@@ -65,8 +65,8 @@ if exist(unstablePath, 'Dir'), customAddPath( unstablePath ); end
 [gtsamSrcFolder, gtsamBuildFolder] = findGtsamPath(p.useLddPath);
 
 % We include gtsam via it's build and source folder.
-customAddPath( fullfile(gtsamBuildFolder,'gtsam','wrap','gtsam_mex') );
-customAddPath( fullfile(gtsamBuildFolder,'gtsam','wrap','gtsam') );
+customAddPath( fullfile(gtsamBuildFolder,'wrap','gtsam_mex') );
+customAddPath( fullfile(gtsamBuildFolder,'wrap','gtsam') );
 customAddPath( fullfile(gtsamSrcFolder,'matlab') );
 customAddPath( fullfile(gtsamSrcFolder,'matlab','gtsam_examples') );
 

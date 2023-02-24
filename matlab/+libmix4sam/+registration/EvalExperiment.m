@@ -139,7 +139,7 @@ classdef (Abstract) EvalExperiment < matlab.mixin.Copyable
             
             %stamped_traj_estimate.txt
             for iResult = 1:length(self.Results)
-                tmp = self.getResultMeanAsMatrix(self, iResult);
+                tmp = self.getResultMeanAsMatrix(iResult);
                 t = SE2Type(tmp, 'Name', self.Results(iResult).name);
                 t = t.cumsum();
                 rpg(iResult).Name = self.Results(iResult).name;

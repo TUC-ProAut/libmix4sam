@@ -26,6 +26,7 @@
  */
 #include <libmix4sam/registration/RadarDopplerFactor.h>
 #include <gtsam/base/Testable.h>
+#include <boost/format.hpp>
 
 namespace libmix4sam {
 

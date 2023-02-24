@@ -76,23 +76,6 @@ set_target_properties(${CONVENIENCE_LIB_NAME} PROPERTIES
 install(TARGETS libmix4sam EXPORT libmix4sam-exports LIBRARY DESTINATION lib ARCHIVE DESTINATION lib RUNTIME DESTINATION bin PUBLIC_HEADER DESTINATION include/${PROJECT_NAME})
 #list(APPEND GTSAM_EXPORTED_TARGETS gtsam)
 
-###################################################################################
-# Build MATLAB wrapper (CMake tracks the dependecy to link with GTSAM through our project's static library)
-if (LIBMIX4SAM_BUILD_WRAP)
-  include(GtsamMatlabWrap)   # Set up automatic MATLAB wrapper generation
-
-  # Generate, build and install toolbox
-  set(mexFlags "${GTSAM_BUILD_MEX_BINARY_FLAGS}")
-  if(NOT BUILD_SHARED_LIBS)
-          list(APPEND mexFlags -DGTSAM_IMPORT_STATIC)
-  endif()
-
-  # Wrap
-  wrap_and_install_library(../libmix4sam.h "${CONVENIENCE_LIB_NAME};gtsam" "${CMAKE_CURRENT_SOURCE_DIR}" "" "${mexFlags}")
-
-  # install matlab functions and scripts
-  #add_subdirectory(matlab)
-endif(LIBMIX4SAM_BUILD_WRAP)
 
 
 

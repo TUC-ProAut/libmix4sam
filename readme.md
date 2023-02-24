@@ -4,7 +4,7 @@
 <img align="right" height="300px" src="doc/img/promo_padding.png">
 
 libMix4SAM is extending the functionality of GTSAM [1].
-It provides factors and noise models to implement robust state estimation using gaussian mixture distributions.
+It provides factors and noise models to implement robust state estimation using Gaussian mixture distributions.
 
 Further information can be found in the corresponding paper, see section "Citation", and our [project's landing page](https://mytuc.org/mix).
 
@@ -46,7 +46,9 @@ If you use this library for academic work, please either cite the library or a c
 <details>
 <summary>Accompanying Paper</summary>
 
-* Pfeifer, Tim, Sven Lange, and Peter Protzel (2021) [Advancing Mixture Models for Least Squares Optimization](http://arxiv.org/abs/2103.02472). arXiv:2103.02472 [cs] (to appear in IEEE Robotics and Automation Letters)
+* Pfeifer, T., Lange, S. and Protzel, P. (2021) [Advancing Mixture Models for Least Squares Optimization](https://doi.org/10.1109/LRA.2021.3067307), IEEE Robotics and Automation Letters, 6(2), pp. 3941--3948.
+* [arXiv-Version](http://arxiv.org/abs/2103.02472)
+
 
 </details>
 
@@ -56,15 +58,14 @@ The following two subsections describe how to build libmix4sam in combination wi
 <details>
 <summary>Compile gtsam locally for libmix4sam</summary>
 
-First, download specific release of gtsam
+First, download a compatible release of gtsam, e.g. 4.2a9:
 ```bash
-❯ git clone https://github.com/borglab/gtsam.git gtsam403-src
-❯ cd gtsam403-src && git checkout 4.0.3 && cd ..
+❯ git clone --single-branch --branch 4.2a9 https://github.com/borglab/gtsam.git gtsam-42a9-src
 ```
-Than configure and compile
+Then configure and compile:
 ```bash
-❯ mkdir gtsam403-build && cd gtsam403-build
-❯ cmake -C <libmix4sam-src>/gtsamConfig.cmake -S ../gtsam403-src 
+❯ mkdir gtsam-42a9-build && cd gtsam-42a9-build
+❯ cmake -C <libmix4sam-src>/gtsamConfig.cmake -S ../gtsam-42a9-src 
 ❯ make -j2
 ```
 > **Note:** We need some specific options for compiling gtsam. They are invoked through using the `gtsamConfig.cmake` as pre-load option for cmake. Further explanation can be found directly within the `*.cmake` file.
@@ -78,7 +79,7 @@ Change to the source folder of libmix4sam.
 
 ```bash
 ❯ mkdir build && cd build
-❯ cmake .. -DGTSAM_BUILD_DIR=<path-to-gtsam403-build-directory>
+❯ cmake .. -DGTSAM_BUILD_DIR=<path-to-gtsam-42a9-build-directory>
 ❯ make -j2
 ```
 
@@ -109,7 +110,7 @@ Some functionalities need additional toolboxes or functions. These are usually l
 >❯ LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6" matlab
 >```
 
-> **Error-Modeling:** Be careful in modelling the mixture components. E.g. if you model an ambiguous measurement with three possible modes all into the mean for the gaussian components and use zero for the factor, it may lead to an indeterminate system. If you instead use one mean as measurement and shift the remaining means accordingly, the system may be solvable again.  
+> **Error-Modeling:** Be careful in modelling the mixture components. E.g. if you model an ambiguous measurement with three possible modes all into the mean for the Gaussian components and use zero for the factor, it may lead to an indeterminate system. If you instead use one mean as measurement and shift the remaining means accordingly, the system may be solvable again.  
 
 ## Known bugs
 * The new GMM noise model won't work till now with GTSAM's BearingRangeFactor (and RangeFactor / BearingFactor), which are based on the ExpressionFactor. If you need it, you could use the older versions of these factors from GTSAM 3.2.3.

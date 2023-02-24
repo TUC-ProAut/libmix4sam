@@ -83,7 +83,7 @@ class RadarDopplerFactor: public NonlinearFactor{
     RadarDopplerFactor(Key key, const double &measuredDoppler, const double &measuredPhi,
                 const SharedNoiseModel &dopplerNoise, const SharedDiagonal &phiNoise, const double &deltaT, 
                 boost::optional<gtsam::Pose2> T_BS = boost::none): 
-                Base(cref_list_of<1>(key)), m_doppler_(measuredDoppler), m_phi_(measuredPhi), 
+                Base(KeyVector{key}), m_doppler_(measuredDoppler), m_phi_(measuredPhi), 
                 dopplerNoisemodel_(dopplerNoise),phiNoisemodel_(phiNoise), dT_(deltaT), T_BS_(T_BS) {
 
       const libmix4sam::noiseModelNew::MixBase* p = dynamic_cast<const libmix4sam::noiseModelNew::MixBase*> (&*dopplerNoise);

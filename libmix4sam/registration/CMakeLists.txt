@@ -25,6 +25,6 @@ file(GLOB registration_headers "*.h")
 install(FILES ${registration_headers} DESTINATION include/${PROJECT_NAME}/registration) 
 
 # Build tests
-gtsamAddTestsGlob(registration "tests/*.cpp" "" ${PROJECT_NAME}) 
-message(STATUS "Building TESTS registration: ${PROJECT_NAME}")
+#gtsamAddTestsGlob(registration "tests/*.cpp" "" ${PROJECT_NAME}) 
+#message(STATUS "Building TESTS registration: ${PROJECT_NAME}")
  

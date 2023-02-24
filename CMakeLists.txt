@@ -23,9 +23,18 @@
 # Main CMake file, based on gtsam's template file for creating new projects 
 # using gtsam's CMake tools, see <gtsam>/cmake/example_project/CMakeLists.txt.
 
-project(libmix4sam CXX C)
 cmake_minimum_required(VERSION 3.0)
-SET(CMAKE_VERBOSE_MAKEFILE ON)
+cmake_policy(SET CMP0048 NEW)
+project(libmix4sam VERSION 0.1.0 LANGUAGES CXX C)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+# Enforce c++11 standards
+add_compile_options(-std=c++11) # CMake 3.1 and earlier
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+###################################################################################
+# OPTIONS
 
 # See whether libmix4sam_unstable is available
 if(EXISTS "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}_unstable" AND IS_DIRECTORY "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}_unstable")
@@ -34,36 +43,35 @@ else()
   set(LIBMIX4SAM_UNSTABLE_AVAILABLE 0)
 endif()
 
-option(USE_LOCAL_GTSAM_BUILD "If enabled, the user can specify a build and source directory of gtsam which will be used instead of the gtsam-system installation" ON)
-option(USE_LOCAL_GTSAM_INSTALL "If enabled, the user can specify a install directory of gtsam which will be used instead of the gtsam-system installation" OFF)
-option(LIBMIX4SAM_BUILD_STATIC_LIBRARY "whether build static library" OFF)
-option(LIBMIX4SAM_BUILD_WRAP "Enable/Disable building of matlab wrap utility (necessary for matlab interface)" ON)
-option(LIBMIX4SAM_BUILD_EXAMPLES "Enable/Disable building of the example applications" ON)
+option(USE_LOCAL_GTSAM_BUILD            "If enabled, the user can specify a build and source directory of gtsam which will be used instead of the gtsam-system installation" ON)
+option(USE_LOCAL_GTSAM_INSTALL          "If enabled, the user can specify a install directory of gtsam which will be used instead of the gtsam-system installation" OFF)
+option(LIBMIX4SAM_BUILD_STATIC_LIBRARY  "whether build static library" OFF)
+option(LIBMIX4SAM_BUILD_WRAP            "Enable/Disable building of matlab wrap utility (necessary for matlab interface)" ON)
+option(LIBMIX4SAM_BUILD_EXAMPLES        "Enable/Disable building of the example applications" ON)
 if(LIBMIX4SAM_UNSTABLE_AVAILABLE)
-  option(LIBMIX4SAM_BUILD_UNSTABLE              "Enable/Disable libmix4sam_unstable"          ON)
+  option(LIBMIX4SAM_BUILD_UNSTABLE      "Enable/Disable libmix4sam_unstable" ON)
 endif()
 
-###################################################################################
-# Find GTSAM components eighter locally or system wide install
-
+# Find GTSAM components eighter locally or system-wide install.
 if(USE_LOCAL_GTSAM_INSTALL AND USE_LOCAL_GTSAM_BUILD)
   message(FATAL_ERROR "Eigther use local build or local install!")
 endif()
-
 if(USE_LOCAL_GTSAM_INSTALL)
   unset(GTSAM_BUILD_DIR CACHE)
   unset(GTSAM_SRC_DIR CACHE)
-  set(GTSAM_INSTALL_DIR "$ENV{HOME}/workspace/gtsam/current_install" CACHE PATH "Install Directory")
+  set(GTSAM_INSTALL_DIR "$ENV{HOME}/workspace/gtsam/gtsam-42a9-install" CACHE PATH "Install Directory")
 
   find_package(GTSAM REQUIRED NO_MODULE QUIET
     PATHS "${GTSAM_INSTALL_DIR}"
     NO_DEFAULT_PATH
   )
 endif()
-
 if(USE_LOCAL_GTSAM_BUILD)
   unset(GTSAM_INSTALL_DIR CACHE)
-  set(GTSAM_BUILD_DIR "$ENV{HOME}/workspace/gtsam/gtsam-403noTBB-build" CACHE PATH "Build Directory")
+  set(GTSAM_BUILD_DIR "$ENV{HOME}/workspace/gtsam/gtsam-42a9-build" CACHE PATH "Build Directory")
+  set(GTSAM_INSTALL_DIR "$ENV{HOME}/workspace/gtsam/gtsam-42a9-install" CACHE PATH "Install Directory")
+  # Even if we use the local build directory, some cmake files with their dependencies are only
+  # available within the install directory.
 
   # These should be set automatically depending on Build dir by find_package!
   unset(GTSAM_INCLUDE_DIR CACHE)
@@ -79,7 +87,7 @@ if(USE_LOCAL_GTSAM_BUILD)
   # (GTSAM_INCLUDE_DIR is a list, we need the first entry)
   LIST(GET GTSAM_INCLUDE_DIR 0 GTSAM_SRC_DIR)
 
-  # We don't need to define include_directories for GTSAM. This is already handeld internally.
+  # We don't need to define include_directories for GTSAM. This is already handled internally.
 endif()
 
 if(NOT USE_LOCAL_GTSAM_INSTALL AND NOT USE_LOCAL_GTSAM_BUILD)
@@ -87,13 +95,12 @@ if(NOT USE_LOCAL_GTSAM_INSTALL AND NOT USE_LOCAL_GTSAM_BUILD)
   unset(GTSAM_INCLUDE_DIR CACHE)
   unset(GTSAM_SRC_DIR CACHE)
   find_package(GTSAM REQUIRED NO_MODULE)
-  find_package(Eigen3 REQUIRED)  # TODO: Don't know if its needed.
+  find_package(Eigen3 REQUIRED)  # TODO: Don't know if it's needed.
 endif()
 
 ###################################################################################
 # Include GTSAM CMake tools
 find_package(GTSAMCMakeTools NO_MODULE QUIET
-  PATHS "${GTSAMCMakeTools_DIR}"
   PATHS "${GTSAM_INSTALL_DIR}/lib/cmake/GTSAMCMakeTools"
   PATHS "${GTSAM_SRC_DIR}/cmake"
   NO_DEFAULT_PATH
@@ -116,10 +123,10 @@ endfunction()
 ###################################################################################
 # BOOST
 
-set(BOOST_FIND_MINIMUM_VERSION 1.43)
+set(BOOST_FIND_MINIMUM_VERSION 1.65)
 set(BOOST_FIND_MINIMUM_COMPONENTS filesystem system thread serialization)
 
-# Following is only necessary, if we need a special boost version
+# Following is only necessary if we need a special boost version:
 #option(Boost_NO_SYSTEM_PATHS "Enable/Disable Boost system path" ON)
 #set(BOOST_ROOT "$ENV{HOME}/workspace/boost/install_1_55_0" CACHE PATH "")
 #set(Boost_ADDITIONAL_VERSIONS "1.55" "1.55.0")
@@ -128,12 +135,12 @@ set(BOOST_FIND_MINIMUM_COMPONENTS filesystem system thread serialization)
 #set(BOOST_FIND_MINIMUM_VERSION 1.55)
 
 # Boost - same requirement as gtsam
-find_package(Boost ${BOOST_FIND_MINIMUM_VERSION} COMPONENTS ${BOOST_FIND_MINIMUM_COMPONENTS})
+find_package(Boost ${BOOST_FIND_MINIMUM_VERSION} COMPONENTS ${BOOST_FIND_MINIMUM_COMPONENTS} REQUIRED)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR}) # Use SYSTEM to include it via -isystem to deactivate boost's concept_check
 ###################################################################################
 
-# Ensure that local folder is searched before library folders
+# Ensure that the local folder is searched before the library folders.
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}")
 
 if(GTSAM_MEX_BUILD_STATIC_MODULE AND LIBMIX4SAM_BUILD_WRAP)
@@ -148,11 +155,11 @@ set(CONVENIENCE_LIB_NAME ${PROJECT_NAME})
 add_subdirectory(${CONVENIENCE_LIB_NAME})
 
 ###################################################################################
-# Build tests (CMake tracks the dependecy to link with GTSAM through our project's static library)
+# Build tests (CMake tracks the dependency to link with GTSAM through our project's static library)
 #gtsamAddTestsGlob("example" "tests/test*.cpp" "" "${CONVENIENCE_LIB_NAME}")
 
 ###################################################################################
-# Build scripts (CMake tracks the dependecy to link with GTSAM through our project's static library)
+# Build scripts (CMake tracks the dependency to link with GTSAM through our project's static library)
 #gtsamAddExamplesGlob("*.cpp" "" "${CONVENIENCE_LIB_NAME}")
 # Build examples
 if (LIBMIX4SAM_BUILD_EXAMPLES)
@@ -171,6 +178,13 @@ OPTION(DEFINE_GTSAM_ENABLE_DEBUG "Activate Custom Debug Messages" ON) # Enabled 
 IF(DEFINE_GTSAM_ENABLE_DEBUG)
     ADD_DEFINITIONS(-DGTSAM_ENABLE_DEBUG)
 ENDIF(DEFINE_GTSAM_ENABLE_DEBUG)
+
+###############################################################################
+# Matlab Wrapper
+if (LIBMIX4SAM_BUILD_WRAP)
+  # Build Matlab package
+  add_subdirectory(matlab)
+endif(LIBMIX4SAM_BUILD_WRAP)
 
 ###############################################################################
 # Documentation

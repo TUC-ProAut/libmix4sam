@@ -323,7 +323,7 @@ class PsrFactor1: public NonlinearFactor, public PsrFactor<VALUE>{
     /** Constructor */
     PsrFactor1(Key key, const VALUE &measuredCurrent, const VALUE &measuredReference,
                 const SharedNoiseModel &referenceNoise = nullptr, const SharedNoiseModel &currentNoise = nullptr): 
-                Base(cref_list_of<1>(key)), 
+                Base(KeyVector{key}), 
                 PsrBase(measuredCurrent, measuredReference, referenceNoise, currentNoise) {
     };
 
