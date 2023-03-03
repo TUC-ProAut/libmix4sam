@@ -27,6 +27,16 @@ set(GTSAM_BUILD_TESTS OFF CACHE BOOL "")
 # We don't need timing
 set(GTSAM_BUILD_TIMING_ALWAYS OFF CACHE BOOL "")
 
-# For now, we don't want to use the python wrapper
-set(GTSAM_BUILD_PYTHON OFF CACHE BOOL "")
+# Disable the python wrapper, if not needed.
+set(GTSAM_BUILD_PYTHON ON CACHE BOOL "")
 set(GTSAM_UNSTABLE_BUILD_PYTHON OFF CACHE BOOL "")
+
+# If we are working within the conda environment, we need to give gtsam 
+# some hints, where to find the correct python environment
+if(DEFINED ENV{CONDA_PREFIX})
+  set(Python_FIND_STRATEGY LOCATION CACHE INTERNAL "")
+  set(Python3_FIND_STRATEGY LOCATION CACHE INTERNAL "")
+  set(PYTHON_ROOT_DIR "$ENV{CONDA_PREFIX}" CACHE PATH "")
+  set(Python_ROOT_DIR "$ENV{CONDA_PREFIX}" CACHE PATH "")
+  set(Python3_ROOT_DIR "$ENV{CONDA_PREFIX}" CACHE PATH "")
+endif()

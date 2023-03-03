@@ -20,36 +20,16 @@
 # Contact Information: Sven Lange (sven.lange@etit.tu-chemnitz.de)
 ############################################################################
 
-# Import the gtwrap package.
-#   Here we must use the install directory because gtwrapConfig.cmake uses variables
-#   at build time. Although we find the file in the build folder, there are still other 
-#   dependent cmake files missing, which are only merged in the installation folder.
-find_package(gtwrap NO_MODULE QUIET
-  PATHS "${GTSAM_INSTALL_DIR}/lib/cmake/gtwrap"
-  NO_DEFAULT_PATH
-)
-if (NOT gtwrap_FOUND)
-  find_package(gtwrap)
-endif()
-message(STATUS "${PACKAGE_PREFIX_DIR}")
-
-set(WRAP_PYTHON_VERSION
-    "Default"
-    CACHE STRING "The Python version to use for wrapping")
-
-gtwrap_get_python_version(${WRAP_PYTHON_VERSION})
-
+# Info: GTSAM's wrapping functionality is already configured and included in the main CMakeLists.txt
 
 # Set up cache options
 option(WRAP_MEX_BUILD_STATIC_MODULE "Build MATLAB wrapper statically (increases build time)" OFF)
-set(WRAP_BUILD_MEX_BINARY_FLAGS "" CACHE STRING "Extra flags for running Matlab MEX compilation")
-set(WRAP_TOOLBOX_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/libmix4sam_toolbox"
+set(WRAP_BUILD_MEX_BINARY_FLAGS     "" CACHE STRING "Extra flags for running Matlab MEX compilation")
+set(WRAP_TOOLBOX_INSTALL_PATH       "${CMAKE_INSTALL_PREFIX}/libmix4sam_toolbox"
     CACHE
       PATH
       "Matlab toolbox destination, blank defaults to CMAKE_INSTALL_PREFIX/libmix4sam_toolbox")
-option(WRAP_BUILD_TYPE_POSTFIXES "Enable/Disable appending the build type to the name of compiled libraries" ON)
-
-
+option(WRAP_BUILD_TYPE_POSTFIXES    "Enable/Disable appending the build type to the name of compiled libraries" ON)
 
 # Copy matlab.h to the correct folder.
 configure_file(${GTSAM_INSTALL_DIR}/include/gtwrap/matlab.h

@@ -303,9 +303,11 @@ namespace libmix4sam
         /// Constructor
         MixBase(const libmix4sam::Mixture& mix) : Base(mix.dim()), mixture_(mix) {};
 
-        virtual ~MixBase() {}
+        
 
       public:
+      
+        virtual ~MixBase() {}
 
         typedef boost::shared_ptr<MixBase> shared_ptr;
 

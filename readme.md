@@ -53,12 +53,12 @@ If you use this library for academic work, please either cite the library or a c
 </details>
 
 ## How to compile
-The following two subsections describe how to build libmix4sam in combination with a local build of gtsam. As there are some specifics to the gtsam build, we will start with this.
+The following two subsections describe how to build libmix4sam in combination with a local build of GTSAM. As there are some specifics to the GTSAM build, we will start with this. *(If you want to use the Python and/or Matlab wrapper, I recommend using a Conda environment, see further below for details.)*
 
 <details>
-<summary>Compile gtsam locally for libmix4sam</summary>
+<summary>Compile GTSAM locally for libmix4sam</summary>
 
-First, download a compatible release of gtsam, e.g. 4.2a9:
+First, download a compatible release of GTSAM, e.g. 4.2a9:
 ```bash
 ❯ git clone --single-branch --branch 4.2a9 https://github.com/borglab/gtsam.git gtsam-42a9-src
 ```
@@ -68,9 +68,9 @@ Then configure and compile:
 ❯ cmake -C <libmix4sam-src>/gtsamConfig.cmake -S ../gtsam-42a9-src 
 ❯ make -j2
 ```
-> **Note:** We need some specific options for compiling gtsam. They are invoked through using the `gtsamConfig.cmake` as pre-load option for cmake. Further explanation can be found directly within the `*.cmake` file.
+> **Note:** We need some specific options for compiling GTSAM. They are invoked through using the `gtsamConfig.cmake` as pre-load option for cmake. Further explanation can be found directly within the `*.cmake` file.
 
-> **Note2:** For easy use later on, we recommend to stick to the naming convention used above for source and build folder of gtsam.
+> **Note2:** For easy use later on, we recommend to stick to the naming convention used above for source and build folder of GTSAM.
 </details>
 
 <details open>
@@ -85,10 +85,50 @@ Change to the source folder of libmix4sam.
 
 </details>
 
+## How to compile using Conda
+Especially, when using the Python wrapper, we may want to develop using a different environment (e.g. with the newest machine learning library, which is not supported by the system's Python version anymore), so we can use Conda to set up a new environment.
+
+### Create Conda environment
+```bash
+conda create --name libmix4sam python=3.10 jupyter cmake matplotlib
+conda activate libmix4sam
+pip install numpy pyparsing pytest
+```
+
+### Build and Install GtSAM
+
+Go into the workspace folder of your choice to execute the following steps. You may want to additionally change the installation directory (CMAKE_INSTALL_PREFIX) of GTSAM during cmake configuration to be alongside the `gtsam-<version>-src` and `gtsam-<version>-build` folders.
+
+```bash
+❯ git clone --single-branch --branch 4.2a9 https://github.com/borglab/gtsam.git gtsam-42a9-src
+❯ mkdir gtsam-42a9-build && cd gtsam-42a9-build
+❯ cmake -C <libmix4sam-src>/gtsamConfig.cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/../gtsam-42a9-install -S ../gtsam-42a9-src 
+❯ make -j$(getconf _NPROCESSORS_ONLN) install
+❯ make python-install
+```
+
+While building GTSAM and also libmix4sam, attention should be lied on the Python version. This should be the one from the Conda environment! 
+
+
+### Build and Install libmix4sam
+
+Now, we can **compile libmix4sam** using the proper GTSAM path configuration (GTSAM_BUILD_DIR and GTSAM_INSTALL_DIR) and Python environment. Here is an example assuming the libmix4sam and GTSAM source folders have a common parent directory.
+
+```bash
+❯ mkdir build && cd build
+❯ cmake -DGTSAM_BUILD_DIR=$(pwd)/../../gtsam-42a9-build -DGTSAM_INSTALL_DIR=$(pwd)/../../gtsam-42a9-install
+❯ make -j$(getconf _NPROCESSORS_ONLN)
+❯ make python-install
+```
+
+
 ## Example
 The file `examples/testPsr2DFactor.cpp` implements a very simple 2D registration example using a GMM for the fixed point set.
 
-More advanced examples are implemented in MATLAB, see the `matlab` directory and e.g. our [CREME Project](https://mytuc.org/creme) (Credible Radar Ego-Motion Estimation).
+The same example is also implemented in MATLAB, see the folder `matlab/libmix4sam/tests`.
+For more advanced examples, we refer to our [CREME Project](https://mytuc.org/creme) (Credible Radar Ego-Motion Estimation).
+
+Likewise, you can find the example implemented in Python and Jupyter notebook using the Python wrapper, see `python/examples/testPsr2DFactor.{py,ipynb}`.
 
 ## Matlab 
 To use the library in MATLAB, add it to the search path:
@@ -103,9 +143,9 @@ Some functionalities need additional toolboxes or functions. These are usually l
 ## Additional notes
 
 > **LM-Algorithm:** 
-> In between the gtsam versions 4.0 and 4.0.3, the stopping criteria calculation of the Levenberg-Marquardt algorithm changed (this regards the file `gtsam/nonlinear/LevenbergMarquardtOptimizer.cpp`). To get the same results as in our published experiments, the mentioned file has to be replaced by the version from gtsam release 4.0.
+> In between the GTSAM versions 4.0 and 4.0.3, the stopping criteria calculation of the Levenberg-Marquardt algorithm changed (this regards the file `gtsam/nonlinear/LevenbergMarquardtOptimizer.cpp`). To get the same results as in our published experiments, the mentioned file has to be replaced by the version from gtsam release 4.0.
 
-> **Matlab-Wrapper:** If MATLAB is complaining about 'Missing symbol's while loading the wrapper, it usually helps starting matlab with changed `LD_PRELOAD` environment variable as follows:
+> **Matlab-Wrapper:** If MATLAB is complaining about 'Missing symbol's while loading the wrapper, it usually helps starting Matlab with changed `LD_PRELOAD` environment variable as follows:
 >```bash
 >❯ LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6" matlab
 >```

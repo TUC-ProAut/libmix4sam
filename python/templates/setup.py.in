@@ -1,0 +1,50 @@
+"""Setup file for ${CONVENIENCE_LIB_NAME} python wrapper"""
+
+try:
+    from setuptools import find_packages, setup
+except ImportError:
+    from distutils.core import find_packages, setup
+
+packages = find_packages()
+
+package_data = {
+    package: [
+        f
+        for f in os.listdir(package.replace(".", os.path.sep))
+        if os.path.splitext(f)[1] in (".so", ".pyd")
+    ]
+    for package in packages
+}
+
+dependency_list = open("requirements.txt").read().split('\n')
+dependencies = [x for x in dependency_list if x[0] != '#']
+
+setup(
+    name='${CONVENIENCE_LIB_NAME}',
+    description='Python wrapper for Mixtures for Smoothing and Mapping Library (libMix4SAM)',
+    version='${PROJECT_VERSION}',
+    author="${PROJECT_AUTHOR}",
+    author_email="${PROJECT_AUTHOR_EMAIL}",
+    license='GPL-3.0',
+    keywords="wrap, python, libmix4sam",
+    long_description="TODO",
+    long_description_content_type="text/markdown",
+    python_requires=">=3.6",
+    # https://pypi.org/classifiers
+    classifiers=[
+        'Intended Audience :: Education',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 3',
+        'Topic :: Software Development :: Libraries'
+    ],
+    packages=packages,
+    # Load the built shared object files
+    package_data=package_data,
+    include_package_data=True,
+    # Ensure that the compiled .so file is properly packaged
+    zip_safe=False,
+    platforms="any",
+    install_requires=dependencies,
+)

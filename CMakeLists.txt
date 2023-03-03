@@ -46,10 +46,22 @@ endif()
 option(USE_LOCAL_GTSAM_BUILD            "If enabled, the user can specify a build and source directory of gtsam which will be used instead of the gtsam-system installation" ON)
 option(USE_LOCAL_GTSAM_INSTALL          "If enabled, the user can specify a install directory of gtsam which will be used instead of the gtsam-system installation" OFF)
 option(LIBMIX4SAM_BUILD_STATIC_LIBRARY  "whether build static library" OFF)
-option(LIBMIX4SAM_BUILD_WRAP            "Enable/Disable building of matlab wrap utility (necessary for matlab interface)" ON)
+option(LIBMIX4SAM_BUILD_MATLAB_WRAP     "Enable/Disable building the Matlab interface (using wrap functionality of gtsam)" ON)
+option(LIBMIX4SAM_BUILD_PYTHON_WRAP     "Enable/Disable building the Python interface (using wrap functionality of gtsam)" ON)
 option(LIBMIX4SAM_BUILD_EXAMPLES        "Enable/Disable building of the example applications" ON)
 if(LIBMIX4SAM_UNSTABLE_AVAILABLE)
   option(LIBMIX4SAM_BUILD_UNSTABLE      "Enable/Disable libmix4sam_unstable" ON)
+endif()
+
+# Choose the correct python environment, if executed within conda environment
+if(LIBMIX4SAM_BUILD_PYTHON_WRAP OR LIBMIX4SAM_BUILD_MATLAB_WRAP)
+  if(DEFINED ENV{CONDA_PREFIX})
+    set(Python_FIND_STRATEGY LOCATION CACHE INTERNAL "")
+    set(Python3_FIND_STRATEGY LOCATION CACHE INTERNAL "")
+    set(PYTHON_ROOT_DIR "$ENV{CONDA_PREFIX}" CACHE PATH "")
+    set(Python_ROOT_DIR "$ENV{CONDA_PREFIX}" CACHE PATH "")
+    set(Python3_ROOT_DIR "$ENV{CONDA_PREFIX}" CACHE PATH "")
+  endif()
 endif()
 
 # Find GTSAM components eighter locally or system-wide install.
@@ -143,7 +155,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR}) # Use SYSTEM to include it via 
 # Ensure that the local folder is searched before the library folders.
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}")
 
-if(GTSAM_MEX_BUILD_STATIC_MODULE AND LIBMIX4SAM_BUILD_WRAP)
+if(GTSAM_MEX_BUILD_STATIC_MODULE AND LIBMIX4SAM_BUILD_MATLAB_WRAP)
   message(FATAL_ERROR "matlab toolbox needs shared gtsam and libmix4sam lib and can not be build as static wrapper.")
 endif()
 
@@ -180,11 +192,37 @@ IF(DEFINE_GTSAM_ENABLE_DEBUG)
 ENDIF(DEFINE_GTSAM_ENABLE_DEBUG)
 
 ###############################################################################
-# Matlab Wrapper
-if (LIBMIX4SAM_BUILD_WRAP)
-  # Build Matlab package
-  add_subdirectory(matlab)
-endif(LIBMIX4SAM_BUILD_WRAP)
+# Wrappers  ->   makes use of gtsam's wrap library
+if (LIBMIX4SAM_BUILD_PYTHON_WRAP OR LIBMIX4SAM_BUILD_MATLAB_WRAP)
+
+  # Import the gtwrap package.
+  #   Here we must use the install directory because gtwrapConfig.cmake uses variables
+  #   at build time. Although we find the file in the build folder, there are still other 
+  #   dependent cmake files missing, which are only merged in the installation folder.
+  #   Therefore, we have to fall back on the installation folder.
+  find_package(gtwrap NO_MODULE QUIET
+    PATHS "${GTSAM_INSTALL_DIR}/lib/cmake/gtwrap"
+    NO_DEFAULT_PATH
+  )
+  # Alternative kicks in if the global installation method was chosen for gtsam.
+  if (NOT gtwrap_FOUND)
+    find_package(gtwrap)
+  endif()
+  # Set the python version for the wrapper
+  set(WRAP_PYTHON_VERSION "Default" CACHE STRING "The Python version to use for wrapping")
+  gtwrap_get_python_version(${WRAP_PYTHON_VERSION})
+
+  # Build the Python wrapper, if chosen
+  if (LIBMIX4SAM_BUILD_PYTHON_WRAP)
+    add_subdirectory(python)
+  endif(LIBMIX4SAM_BUILD_PYTHON_WRAP)
+
+  # Build the Matlab wrapper, if chosen
+  if (LIBMIX4SAM_BUILD_MATLAB_WRAP)
+    add_subdirectory(matlab)
+  endif(LIBMIX4SAM_BUILD_MATLAB_WRAP)
+
+endif()
 
 ###############################################################################
 # Documentation
@@ -208,13 +246,22 @@ print_config("Used CMakeTools Directory" "${GTSAMCMakeTools_DIR}")
 if(USE_LOCAL_GTSAM_BUILD)
   print_config("GTSAM-Build-Directory" "${GTSAM_BUILD_DIR}")
   print_config("GTSAM-Include-Dir" "${GTSAM_INCLUDE_DIR}")
+  print_config("GTSAM-Install-Dir (needed for wrappers)" "${GTSAM_INSTALL_DIR}")
 endif()
 if(USE_LOCAL_GTSAM_INSTALL)
   print_config("GTSAM-Include-Dir" "${GTSAM_INCLUDE_DIR}")
 endif()
 if(LIBMIX4SAM_UNSTABLE_AVAILABLE)
-    print_config("Build libmix4sam_unstable" "${LIBMIX4SAM_BUILD_UNSTABLE}")
+  print_config("Build libmix4sam_unstable" "${LIBMIX4SAM_BUILD_UNSTABLE}")
 endif()
+if(LIBMIX4SAM_BUILD_PYTHON_WRAP OR LIBMIX4SAM_BUILD_MATLAB_WRAP)
+  print_config("Python executable path" "${PYTHON_EXECUTABLE}")
+endif()
+print_config("Build python wrapper" "${LIBMIX4SAM_BUILD_PYTHON_WRAP}")
+if(LIBMIX4SAM_BUILD_PYTHON_WRAP)
+  print_config("Python version to use for wrapper" "${WRAP_PYTHON_VERSION}")
+endif()
+print_config("Build matlab wrapper" "${LIBMIX4SAM_BUILD_MATLAB_WRAP}")
 message(STATUS "===============================================================")
 
 # Add all targets to the build-tree export set
